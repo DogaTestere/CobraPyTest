@@ -23,5 +23,9 @@ with model:
     single_reaction_deletion(model, ["CYTK1"])
     print(f"Cytidylate kinase(CMP1) reaction knocout: {model.optimize().objective_value}")
 
-
+# Test3 : No Oxygen intake
+with model:
+    o2_intake = model.reactions.get_by_id("EX_o2_e")
+    o2_intake.bounds = (0, 1000)
+    print(f"No oxygen intake possible: {model.optimize().objective_value}")
 
