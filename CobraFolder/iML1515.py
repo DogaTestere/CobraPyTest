@@ -18,6 +18,10 @@ with model:
     print(f"No o2 in the medium solution: {model.optimize().objective_value}")
 
 
-# Test2 : CYTK2 knockout
+# Test2 : CYTK1 reaction knockout
 with model:
-    model.reactions
+    single_reaction_deletion(model, ["CYTK1"])
+    print(f"Cytidylate kinase(CMP1) reaction knocout: {model.optimize().objective_value}")
+
+
+
