@@ -18,10 +18,10 @@ with model:
     print(f"No o2 in the medium solution: {model.optimize().objective_value}")
 
 
-# Test2 : CYTK1 reaction knockout
+# Test2 : ATPS4rpp reaction knockout
 with model:
-    single_reaction_deletion(model, ["CYTK1"])
-    print(f"Cytidylate kinase(CMP1) reaction knocout: {model.optimize().objective_value}")
+    single_reaction_deletion(model, ["ATPS4rpp"])
+    print(f"ATPS4rpp(ATP synthase) reaction knocout: {model.optimize().objective_value}")
 
 # Test3 : No Oxygen intake
 with model:
