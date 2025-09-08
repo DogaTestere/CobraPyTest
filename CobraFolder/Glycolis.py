@@ -62,10 +62,6 @@ hqui = create_metabolites("hqui","C6H6O2","Hydroquinone","c")
 salc = create_metabolites("salc","C13H18O7","Salicin","e")
 arbt = create_metabolites("arbt","C12H16O7","Arbutin","e")
 
-# --- External Pathways
-kdpg = create_metabolites("kdgp","C6H11O9P","2-Dehydro-3-deoxy-6-phospho-D-gluconate","c")
-glyc = create_metabolites("glyc","C3H6O4","Glycerate","c")
-
 # --- Reaction Definitions ---
 R_27199 = create_reaction("R02738", "protein-N(pi)-phosphohistidine:D-glucose 6-phosphotransferase", "(b1101 or b1621)", {glc_EX: -1.0, glc_p: 1.0})
 R_5319 = create_reaction("R13199", "alpha-D-glucose-6-phosphate aldose-ketose-isomerase", "(b4025)", {glc_p: -1.0, frc_p: 1.0}, -1000,subsystem="Glycolysis (Embden-Meyerhof pathway)")
@@ -92,11 +88,11 @@ R_32186 = create_reaction("R05134","salicin 6-phosphate glucohydrolase","(b1734 
 R_32186_a = create_reaction("R05133","arbutin 6-phosphate glucohydrolase","(b1734 or b2716 or b2901 or b3721)",{h2o:-1.0,glc_bp:1.0,arbt_p:-1.0,hqui:1.0},subsystem="")
 
 # --- From External Pathways
-R_41214 = create_reaction("R05605","2-dehydro-3-deoxy-6-phospho-D-gluconate D-glyceraldehyde-3-phosphate-lyase (pyruvate-forming)","(b1850)",{kdpg:-1.0, pyr:1.0, gap:1.0},-1000, subsystem="Pentose Phosphate Pathway")
-R_271165 = create_reaction("R08572","ATP:(R)-glycerate 2-phosphotransferase","(b0514 or b3124)",{atp:-1.0,glyc:-1.0,adp:1.0,h:1.0,g2p:1.0},subsystem="Pentose phosphate pathway")
+R_271165 = create_reaction("R08572", "Pentose Way Simulation","(b0514 or b3124 or b1850)",{glc_p:-1.0,gap:1.0,g2p:1.0,atp:-1.0,adp:1.0},subsystem="Pentose Phosphate Pathway Simulation")
 
 # --- Needed Reactions
-atp_reaction = create_reaction("ATP_M", "ATP/ADP Generation for balance", "(0000)", {atp: 1.0, adp: -1.0, pi: -1.0})
+atp_reaction = create_reaction("ATP_M", "ATP Generation for balance", "(0000)", {atp: 1.0, adp: -1.0, pi: -1.0})
+adp_reaction = create_reaction("ADP_M","ADP Generation for balance","(0000)",{atp:-1.0,adp:1.0,pi:1.0})
 nadh_oxidation = create_reaction("NADH_OX", "NADH Oxidation", "(0000)", {nadh: -1.0, nad: 1.0})
 
 # --- Reaction Adding
@@ -123,10 +119,10 @@ model.add_reactions([
     R_32186,
     R_32186_a,
     # External Pathways
-    R_41214,
     R_271165,
     # Enegry Circulation
     atp_reaction,
+    #adp_reaction,
     nadh_oxidation
 ])
 
@@ -135,13 +131,12 @@ model.add_boundary(salc, type="exchange", lb=-10.0)
 model.add_boundary(arbt, type="exchange", lb=-10.0)
 model.add_boundary(pyr, type="demand", lb=0.0) # Added incase pyr amount stops the other ways
 
+model.add_boundary(pi, type="demand", lb=0.0)
+
 # Other Metabolic Pathways
-model.add_boundary(model.metabolites.get_by_id("kdgp"), type="sink")
-# model.add_boundary(model.metabolites.get_by_id("glyc"), type="sink") # glyc -> g2p -> pep is being used too much and doesn't use core glycolysis
 model.add_boundary(model.metabolites.get_by_id("oxa"), type="sink")
-# model.add_boundary(model.metabolites.get_by_id("glc_ap"), type="sink") # If closed it forces cell to exchange molecules from outside
-# glc_ap sink if closed makes cell produces kdgp and sink them
-# And when kdgp is closed as a sink cell abuses that pathway to directly make pyr
+# model.add_boundary(model.metabolites.get_by_id("glc_ap"), type="sink") # Comes from starch and sucrose metabolism
+# Model uses this directly instead of importing molecules if open
 
 model.objective = "R00200"
 

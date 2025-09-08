@@ -1,5 +1,14 @@
 Genlerde ismi 'eco' olan = Escherichia coli K-12 MG1655 <- Buna bak
 
+glyc exchange yerine
+
+glc-p ----> gap + g2p yapsak
+glukoz-p -> Pentoz fosfat yolu var zaten.
+
+oxa üretimi de benzer şekilde yapılabilir.
+pirüvat ----> asetilCoA ----> oxa
+pirüvat ----> ThPP ----> acetyl-dihidro ----> asetilCoA ----> oxa
+
 ---
 ## Yan yollar
 
