@@ -6,8 +6,18 @@ glc-p ----> gap + g2p yapsak
 glukoz-p -> Pentoz fosfat yolu var zaten.
 
 oxa üretimi de benzer şekilde yapılabilir.
-pirüvat ----> asetilCoA ----> oxa
-pirüvat ----> ThPP ----> acetyl-dihidro ----> asetilCoA ----> oxa
+pirüvat ----> asetilCoA ----> citrat ----> oxa
+pirüvat ----> ThPP ----> acetyl-dihidro ----> asetilCoA ----> citrat ----> oxa
+
+R_41119 -> b3403 | ATP + Oxaloacetate <=> ADP + Phosphoenolpyruvate + CO2 | R00341 
+
+R_1271 -> b1378 | 2 Reduced ferredoxin + Acetyl-CoA + CO2 + 2 H+ <=> 2 Oxidized ferredoxin + Pyruvate + CoA | R01196
+
+R_1241 -> b0114 | Pyruvate + Thiamin diphosphate <=> 2-(alpha-Hydroxyethyl)thiamine diphosphate + CO2 | R00014
+
+R_1241_e ->  b0114 | 2-(alpha-Hydroxyethyl)thiamine diphosphate + Enzyme N6-(lipoyl)lysine <=> [Dihydrolipoyllysine-residue acetyltransferase] S-acetyldihydrolipoyllysine + Thiamin diphosphate | R03270
+
+Yeni yolda moleküller eksik özellikle coa, ama oluşturacak yer yok. Sadece aceCoa tüketilerek oluşturuluyor. O da, pruvat harcanarak oluşuyor. Pürivat amaç olduğu sürecede de yeni eklenen yollar çalışmıyor.
 
 ---
 ## Yan yollar
