@@ -1,4 +1,8 @@
+import pandas as pd
+
 from cobra import Model, Reaction, Metabolite
+
+pd.set_option("display.float_format", "{:.10f}".format)
 
 model = Model("NewModel")
 
@@ -36,12 +40,12 @@ adp = create_metabolites("adp", "C10H15N5O10P2", "Adenosine-5-diphosphate", "c")
 frc_dp = create_metabolites("frc_dp", "C6H14O12P2", "D-Fructose-1,6-bisphosphate", "c")
 h2o = create_metabolites("h2o", "H2O", "Water", "c")
 pi = create_metabolites("pi", "H3PO4", "Phosphate", "c")
-dhap = create_metabolites("dhap", "C3H7O6P", "Glycerone phosphate", "c")
+glyc_p = create_metabolites("dhap", "C3H7O6P", "Glycerone phosphate", "c")
 gap = create_metabolites("gap", "C3H7O6P", "D-Glyceraldehyde 3-phosphate", "c")
 nad = create_metabolites("nad", "C21H28N7O14P2", "NAD+", "c")
 nadh = create_metabolites("nadh", "C21H29N7O14P2", "NADH", "c")
 h = create_metabolites("h", "H", "Proton", "c")
-dpg = create_metabolites("dpg", "C3H8O10P2", "3-Phospho-D-glyceroyl phosphate", "c")
+gly_p = create_metabolites("gly_p", "C3H8O10P2", "3-Phospho-D-glyceroyl phosphate", "c")
 g3p = create_metabolites("g3p", "C3H7O7P", "3-Phospho-D-glycerate", "c")
 g2p = create_metabolites("g2p", "C3H7O7P", "2-Phospho-D-glycerate", "c")
 pep = create_metabolites("pep", "C3H5O6P", "Phosphoenolpyruvate", "c")
@@ -71,10 +75,10 @@ R_27199 = create_reaction("R02738", "protein-N(pi)-phosphohistidine:D-glucose 6-
 R_5319 = create_reaction("R13199", "alpha-D-glucose-6-phosphate aldose-ketose-isomerase", "(b4025)", {glc_p: -1.0, frc_p: 1.0}, -1000,subsystem="Glycolysis (Embden-Meyerhof pathway)")
 R_27111 = create_reaction("R00756", "ATP:D-fructose-6-phosphate 1-phosphotransferase", "(b1723 or b3916)", {atp: -1.0, frc_p: -1.0, adp: 1.0, frc_dp: 1.0},subsystem="Glycolysis (Embden-Meyerhof pathway)")
 R_31311 = create_reaction("R00762", "D-fructose-1,6-bisphosphate 1-phosphohydrolase", "(b2930 or b3925 or b4323)", {frc_dp: -1.0, h2o: -1.0, frc_p: 1.0, pi: 1.0})
-R_41213 = create_reaction("R01068", "D-fructose-1,6-bisphosphate D-glyceraldehyde-3-phosphate-lyase", "(b2097 or b2925)", {frc_dp: -1.0, dhap: 1.0, gap: 1.0}, -1000,subsystem="Glycolysis (Embden-Meyerhof pathway)")
-R_5311 = create_reaction("R01015", "D-glyceraldehyde-3-phosphate aldose-ketose-isomerase", "(b3919)", {gap: -1.0, dhap: 1.0}, -1000,subsystem="Glycolysis, core module involving three-carbon compounds")
-R_12112 = create_reaction("R01061", "D-glyceraldehyde-3-phosphate:NAD+ oxidoreductase (phosphorylating)", "(b1779)", {gap: -1.0, pi: -1.0, nad: -1.0, dpg: 1.0, nadh: 1.0, h: 1.0}, low_bound=-1000, subsystem="Glycolysis, core module involving three-carbon compounds")
-R_2723 = create_reaction("R01512", "ATP:3-phospho-D-glycerate 1-phosphotransferase", "(b2926)", {dpg: -1.0, adp: -1.0, g3p: 1.0, atp: 1.0}, -1000,subsystem="Glycolysis, core module involving three-carbon compounds")
+R_41213 = create_reaction("R01068", "D-fructose-1,6-bisphosphate D-glyceraldehyde-3-phosphate-lyase", "(b2097 or b2925)", {frc_dp: -1.0, glyc_p: 1.0, gap: 1.0}, -1000,subsystem="Glycolysis (Embden-Meyerhof pathway)")
+R_5311 = create_reaction("R01015", "D-glyceraldehyde-3-phosphate aldose-ketose-isomerase", "(b3919)", {gap: -1.0, glyc_p: 1.0}, -1000,subsystem="Glycolysis, core module involving three-carbon compounds")
+R_12112 = create_reaction("R01061", "D-glyceraldehyde-3-phosphate:NAD+ oxidoreductase (phosphorylating)", "(b1779)", {gap: -1.0, pi: -1.0, nad: -1.0, gly_p: 1.0, nadh: 1.0, h: 1.0}, low_bound=-1000, subsystem="Glycolysis, core module involving three-carbon compounds")
+R_2723 = create_reaction("R01512", "ATP:3-phospho-D-glycerate 1-phosphotransferase", "(b2926)", {gly_p: -1.0, adp: -1.0, g3p: 1.0, atp: 1.0}, -1000,subsystem="Glycolysis, core module involving three-carbon compounds")
 R_54211 = create_reaction("R01518", "D-phosphoglycerate 2,3-phosphomutase", "(b3612 or b0755 or b4395)", {g2p: -1.0, g3p: 1.0}, -1000,subsystem="Glycolysis, core module involving three-carbon compounds")
 R_42111 = create_reaction("R00658", "2-phospho-D-glycerate hydro-lyase (phosphoenolpyruvate-forming)", "(b2779)", {g2p: -1.0, pep: 1.0, h2o: 1.0}, -1000,subsystem="Glycolysis, core module involving three-carbon compounds")
 R_27140 = create_reaction("R00200", "ATP:pyruvate 2-O-phosphotransferase", "(b1676 or b1854)", {pep: -1.0, adp: -1.0, h: -1.0, atp: 1.0, pyr: 1.0},subsystem="Glycolysis, core module involving three-carbon compounds")
@@ -90,6 +94,7 @@ R_2712_b = create_reaction("R01600","ATP:beta-D-glucose 6-phosphotransferase","(
 R_31310 = create_reaction("R00947","alpha-D-glucose-1-phosphate phosphohydrolase","(b1002)",{h2o:-1.0,glc_ap:-1.0,glc_a:1.0,pi:1.0},subsystem="Glycolysis / Gluconeogenesis")
 R_32186 = create_reaction("R05134","salicin 6-phosphate glucohydrolase","(b1734 or b2716 or b2901 or b3721)",{h2o:-1.0,glc_bp:1.0,salc_p:-1.0,salc_oh:1.0},subsystem="Glycolysis / Gluconeogenesis")
 R_32186_a = create_reaction("R05133","arbutin 6-phosphate glucohydrolase","(b1734 or b2716 or b2901 or b3721)",{h2o:-1.0,glc_bp:1.0,arbt_p:-1.0,hqui:1.0},subsystem="Glycolysis / Gluconeogenesis")
+
 R_1271 = create_reaction("R01196","pyruvate:ferredoxin 2-oxidoreductase (CoA-acetylating)","(b1378)",{pyr:-1.0,ace_coa:1.0,coa:-1.0,co2:1.0,h:-2.0},-1000,subsystem="Glycolysis / Gluconeogenesis")
 R_1241 = create_reaction("R00014","pyruvate:thiamin diphosphate acetaldehydetransferase (decarboxylating)","(b0114)",{pyr:-1.0,h:-1.0,co2:1.0,thipp:-1.0,h_thipp:1.0})
 R_1241_e = create_reaction("R03270","2-(alpha-Hydroxyethyl)thiamine diphosphate + Enzyme N6-(lipoyl)lysine <=> [Dihydrolipoyllysine-residue acetyltransferase] S-acetyldihydrolipoyllysine + Thiamin diphosphate","(b0114)",{h_thipp:-1.0,thipp:1.0},subsystem="Glycolysis / Gluconeogenesis")
@@ -100,7 +105,8 @@ R_271165 = create_reaction("R08572", "Pentose Way Simulation","(b0514 or b3124 o
 R_2331 = create_reaction("R00351", "TCA Cycle Simulation(Not Accurate)","(b0720)",{oxa:1.0,ace_coa:-1.0},-1000,subsystem="TCA Cycle Simulation")
 
 # --- Needed Reactions
-atp_reaction = create_reaction("ATP_M", "ATP/ADP Generation for balance", "(0000)", {atp: 1.0, adp: -1.0, pi: -1.0},-1000)
+atp_reaction = create_reaction("ATP_M", "ATP/ADP Generation for balance", "(b0000)", {atp: 1.0, adp: -1.0, pi: -1.0})
+adp_reaction = create_reaction("ADP_M", "ADP generation for balance","(b0000)",{atp:-1.0,adp:1.0,pi:1.0})
 nadh_oxidation = create_reaction("R07618", "enzyme N6-(dihydrolipoyl)lysine:NAD+ oxidoreductase", "(b0116)", {nadh: -1.0, nad: 1.0, h:1.0},-1000)
 
 # --- Reaction Adding
@@ -132,8 +138,10 @@ model.add_reactions([
     R_23112,
     # External Pathways
     R_271165,
+    R_2331,
     # Enegry Circulation
-    atp_reaction,
+    #atp_reaction,
+    #adp_reaction,
     nadh_oxidation
 ])
 
@@ -150,3 +158,29 @@ model.add_boundary(pi, type="demand", lb=0.0)
 
 model.objective = "R00200"
 
+with model:
+    model.add_boundary(h,type="demand", lb=0.0)
+    model.add_reactions([adp_reaction]) # Becomes zero if not added
+    print("---PPP way shut down---")
+    model.reactions.R08572.knock_out()
+    solution = model.optimize()
+    print(solution)
+    print("\n")
+    print(solution.fluxes)
+    print("\n")
+
+with model:
+    print("---TCA way shut down---")
+    model.reactions.R00351.knock_out()
+    solution = model.optimize()
+    print(solution)
+    print("\n")
+    print(solution.fluxes)
+    print("\n")
+
+print("---Normal Model---")
+solution = model.optimize()
+print(solution)
+print("\n")
+print(solution.fluxes)
+print("\n")
