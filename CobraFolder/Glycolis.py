@@ -1,6 +1,11 @@
 import pandas as pd
 
 from cobra import Model, Reaction, Metabolite
+from cobra.flux_analysis import (
+    single_gene_deletion, single_reaction_deletion,
+    double_gene_deletion, double_reaction_deletion,
+    flux_variability_analysis
+)
 
 pd.set_option("display.float_format", "{:.10f}".format)
 
@@ -162,7 +167,7 @@ with model:
     model.add_boundary(h,type="demand", lb=0.0)
     model.add_reactions([adp_reaction]) # Becomes zero if not added
     print("---PPP way shut down---")
-    model.reactions.R08572.knock_out()
+    single_reaction_deletion(model, ["R08572"])
     solution = model.optimize()
     print(solution)
     print("\n")
@@ -171,7 +176,7 @@ with model:
 
 with model:
     print("---TCA way shut down---")
-    model.reactions.R00351.knock_out()
+    single_reaction_deletion(model, ["R00351"])
     solution = model.optimize()
     print(solution)
     print("\n")
