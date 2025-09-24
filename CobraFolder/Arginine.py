@@ -82,7 +82,7 @@ R_35116 = create_reaction("R00669","N2-acetyl-L-ornithine amidohydrolase","(b395
 R_2133 = create_reaction("R01398","carbamoyl-phosphate:L-ornithine carbamoyltransferase","(b0273 or b4254)",{ort:-1.0,cp:-1.0,cit:1.0,pi:1.0,h:1.0},-1000,subsystem="")
 R_6345 = create_reaction("R01954","L-citrulline:L-aspartate ligase (AMP-forming)","(b3172)",{asp:-1.0,cit:-1.0,atp:-1.0,amp:1.0,dpi:1.0,arg_suc:1.0,h:1.0},subsystem="")
 R_4321 = create_reaction("R01086","2-(Nomega-L-arginino)succinate arginine-lyase (fumarate-forming)","(b3960)",{arg_suc:-1.0,arg:1.0,fum:1.0},-1000,subsystem="")
-R_6355 = create_reaction("R00575","HCO3-:L-glutamine amido-ligase (ADP-forming, carbamate-phosphorylating)","(b0032 or b0033)",{atp:-2.0,gln:-1.0,hco3:-1.0,h2o:-1.0,adp:2.0,pi:1.0,glt:1.0,cp:1.0},subsystem="") #Four-step reaction, this is the total of it in KEGG
+R_6355 = create_reaction("R00575","HCO3-:L-glutamine amido-ligase (ADP-forming, carbamate-phosphorylating)","(b0032 or b0033)",{atp:-2.0,gln:-1.0,hco3:-1.0,h2o:-1.0,adp:2.0,pi:1.0,glt:1.0,cp:1.0,h:2.0},subsystem="") # Probably uses R_2722 and gets the hco3 from pyr-hco3
 
 # Total missing:
 # asp -2 | oxa_glt -1 | ala -1 | ac_coa -1
@@ -90,21 +90,77 @@ R_6355 = create_reaction("R00575","HCO3-:L-glutamine amido-ligase (ADP-forming, 
 
 # Total overflow:
 # glt +1 | oxa +1 | pyr +1 | coa +1
-# h +2 | adp +3 | nadp +1 | pi +3
+# h +4 | adp +3 | nadp +1 | pi +3
 # acet +1 | amp +1 | dpi +1 | fum +1 
 
 # --- Side Reactions (Not on MetaCyc)
 R_1414 = create_reaction("R00248","L-glutamate:NADP+ oxidoreductase (deaminating)","(b1761)",{glt:-1.0,nadp:-1.0,h2o:-1.0,oxa_glt:1.0,nadph:1.0,h:1.0,nh3:1.0},-1000,subsystem="")
 R_3512 = create_reaction("R00256","L-glutamine amidohydrolase","(b0485 or b1524)",{gln:-1.0,glt:1.0,nh3:1.0,h:1.0,h2o:-1.0},subsystem="")
 R_2722 = create_reaction("R00150","ATP:carbamate phosphotransferase","(b0323 or b0521 or b2874)",{nh3:-1.0,hco3:-1.0,atp:-1.0,cp:1.0,adp:1.0,h2o:1.0,h:1.0},-1000,subsystem="")
-R_6312 = create_reaction("R00253","L-glutamate:ammonia ligase (ADP-forming)","(b3870)",{nh3:-1.0,glt:-1.0,atp:-1.0,gln:1.0,adp:1.0,pi:1.0,h:1.0},subsystem="")
-R_35116 = create_reaction("R09107","N-acetyl-L-citrulline amidohydrolase","(b3957)",{h2o:-1.0,ac_cit:-1.0,cit:1.0,acet:1.0},subsystem="")
+R_6312 = create_reaction("R00253","L-glutamate:ammonia ligase (ADP-forming)","(b3870)",{nh3:-1.0,glt:-1.0,atp:-1.0,gln:1.0,adp:1.0,pi:1.0,h:1.0},subsystem="") #gln is produced by gln-acet
+R_35116_b = create_reaction("R09107","N-acetyl-L-citrulline amidohydrolase","(b3957)",{h2o:-1.0,ac_cit:-1.0,cit:1.0,acet:1.0},subsystem="") # Doesnt work bcs of ac_cit
 
 # Total missing:
-# asp -2 | ala -1 | ac_coa -1 | atp -6 
-# h2o -4 | gln -1 | hco3 -2 | ac_cit -1
+# (s)asp -2 | ~ala -1 | ~ac_coa -1 | ~atp -6 
+# (s)h2o -4 | gln -1 | ~hco3 -2 | ac_cit -1
 
 # Total overflow:
-# oxa +1 | pyr +1 | coa +1 | h +6
-# adp +5 | pi +4 | acet +2 | cp +1
-# cit +1 | amp +1 | dpi +1 | fum +1 
+# ~oxa +1 | ~pyr +1 | ~coa +1 | (d)h +8
+# ~adp +5 | ~pi +4 | acet +2 | ~cp +1
+# cit +1 | ~amp +1 | ~dpi +1 | fum +1 
+
+# --- Balance Reactions
+atp_reaction = create_reaction("ATP-M","ATP from ADP Reaction for balance","(b0000)",{adp:-1.0,pi:-1.0,atp:1.0}) # atp -2 | adp +1 | pi 0
+amp_reaction = create_reaction("AMP-M","ATP from AMP Reaction for balance","(b0000)",{amp:-1.0,dpi:-1.0,atp:1.0}) # atp -1 | amp 0 | dpi 0
+
+# --- Non-Realistic Reactions
+adp_reaction = create_reaction("ADP-M","Non-accurate, here for atp balance","(b0000)",{atp:1.0,adp:-1.0}) # atp 0 | adp 0
+ac_coa_reaction = create_reaction("CoA-AceCoA", "AceCoA Reaction for balance","(b0000)",{coa:-1.0,ac_coa:1.0}) # ac_coa 0 | coa 0
+oxa_ala_reaction = create_reaction("Oxa-Ala","Balance Reaction for Oxa and Ala","(b0000)",{oxa:-1.0,ala:1.0}) # oxa 0 | ala 0
+hco3_cp_reaction = create_reaction("Cp-HCO3","Balance for cp","(b0000)",{cp:-1.0,hco3:1.0}) # cp 0 | hco3 -1
+hco3_pyr_reaction = create_reaction("Pyr-HCO3","Balance for hco3 and pyr","(b0000)",{hco3:1.0,pyr:-1.0}) # hco3 0 | pyr 0
+acet_gln_reaction = create_reaction("Acet-Gln","Balance for gln and acet","(b0000)",{acet:-1.0,gln:1.0}) # acet 0/(c) +1 | gln 0
+
+model.add_reactions([
+    R_2611,
+    R_2612,
+    R_2311,
+    R_2728,
+    R_12138,
+    R_26111,
+    R_35116,
+    R_2133,
+    R_6345,
+    R_4321,
+    R_6355,
+    R_1414,
+    R_3512,
+    R_2722,
+    R_6312,
+    R_35116_b,
+    atp_reaction,
+    amp_reaction,
+    adp_reaction,
+    ac_coa_reaction,
+    oxa_ala_reaction,
+    hco3_cp_reaction,
+    hco3_pyr_reaction,
+    acet_gln_reaction
+])
+
+model.objective = "R01086"
+
+# --- Exchanges and Sinks
+model.add_boundary(h2o, "sink")
+model.add_boundary(asp, "sink",lb=-30) # If lower bound not set, solution becomes 166.667 . If set, solution becomes 15.000 . So 2:1
+
+model.add_boundary(h, "demand")
+model.add_boundary(arg, "demand")
+model.add_boundary(fum, "demand") # Consumption by TCA
+
+print("---Normal Model---")
+solution = model.optimize()
+print(solution)
+print("\n")
+print(solution.fluxes)
+print("\n")
