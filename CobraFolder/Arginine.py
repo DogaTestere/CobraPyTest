@@ -152,11 +152,66 @@ model.objective = "R01086"
 
 # --- Exchanges and Sinks
 model.add_boundary(h2o, "sink")
-model.add_boundary(asp, "sink",lb=-30) # If lower bound not set, solution becomes 166.667 . If set, solution becomes 15.000 . So 2:1
+model.add_boundary(asp, "sink", lb=-30.0) # If lower bound not set, solution becomes 166.667 . If set, solution becomes 15.000 . So 2:1
 
 model.add_boundary(h, "demand")
 model.add_boundary(arg, "demand")
 model.add_boundary(fum, "demand") # Consumption by TCA
+
+with model:
+    print("---Acet-Gln Closed---")
+    model.add_boundary(acet, "demand")
+    model.add_boundary(glt, "sink")
+
+    model.reactions.get_by_id("Acet-Gln").knock_out()
+
+    solution = model.optimize()
+    print(solution)
+    print("\n")
+    print(solution.fluxes)
+    print("\n")
+
+
+# with model:
+#     print("---Hco3-Pyr Closed---")
+#     model.add_boundary(pyr, "demand")
+#     model.add_boundary(hco3, "sink")
+
+#     model.reactions.get_by_id("Pyr-HCO3").knock_out()
+
+#     solution = model.optimize()
+#     print(solution)
+#     print("\n")
+#     print(solution.fluxes)
+#     print("\n")
+
+# with model:
+#     print("---Hco3-Cp Closed---")
+#     model.add_boundary(cp, "demand")
+#     model.add_boundary(hco3, "sink")
+
+#     model.reactions.get_by_id("Cp-HCO3").knock_out()
+
+#     solution = model.optimize()
+#     print(solution)
+#     print("\n")
+#     print(solution.fluxes)
+#     print("\n")
+
+# with model:
+#    print("---Oxa-Ala Closed---")
+#    model.add_boundary(oxa, "demand")
+#    model.add_boundary(ala, "sink")
+
+#    model.reactions.get_by_id("Oxa-Ala").knock_out()
+
+#    solution = model.optimize()
+#    print(solution)
+#    print("\n")
+#    print(solution.fluxes)
+#    print("\n")
+
+    
 
 print("---Normal Model---")
 solution = model.optimize()
