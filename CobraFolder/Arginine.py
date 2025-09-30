@@ -85,13 +85,13 @@ R_4321 = create_reaction("R01086","2-(Nomega-L-arginino)succinate arginine-lyase
 R_6355 = create_reaction("R00575","HCO3-:L-glutamine amido-ligase (ADP-forming, carbamate-phosphorylating)","(b0032 or b0033)",{atp:-2.0,gln:-1.0,hco3:-1.0,h2o:-1.0,adp:2.0,pi:1.0,glt:1.0,cp:1.0,h:2.0},subsystem="") # Probably uses R_2722 and gets the hco3 from pyr-hco3
 
 # Total missing:
-# asp -2 | oxa_glt -1 | ala -1 | ac_coa -1
-# atp -4 | nadph -1 | h2o -2 | gln -1 | hco3 -1
+# (s)asp -2 | oxa_glt -1 | ~ala -1 | ~ac_coa -1
+# ~atp -4 | ~nadph -1 | (s)h2o -2 | ~gln -1 | ~hco3 -1
 
 # Total overflow:
-# glt +1 | oxa +1 | pyr +1 | coa +1
-# h +4 | adp +3 | nadp +1 | pi +3
-# acet +1 | amp +1 | dpi +1 | fum +1 
+# glt +1 | ~oxa +1 | ~pyr +1 | ~coa +1
+# (d)h +4 | ~adp +3 | ~nadp +1 | ~pi +3
+# ~acet +1 | ~amp +1 | ~dpi +1 | (d)fum +1 
 
 # --- Side Reactions (Not on MetaCyc)
 R_1414 = create_reaction("R00248","L-glutamate:NADP+ oxidoreductase (deaminating)","(b1761)",{glt:-1.0,nadp:-1.0,h2o:-1.0,oxa_glt:1.0,nadph:1.0,h:1.0,nh3:1.0},-1000,subsystem="")
@@ -157,6 +157,27 @@ model.add_boundary(asp, "sink", lb=-30.0) # If lower bound not set, solution bec
 model.add_boundary(h, "demand")
 model.add_boundary(arg, "demand")
 model.add_boundary(fum, "demand") # Consumption by TCA
+
+with model:
+    print("---Reduced Model---")
+
+    red_NADPH = create_reaction("Red-NADP","NADPH recycling for reduced model","(b0000)",{nadp:-1.0,h:-1.0,nadph:1.0})
+    red_Glt_Oxa = create_reaction("Red-Glt-Oxa","Glt-Oxa_glt recycling","(b0000)",{glt:-1.0,oxa_glt:1.0})
+
+    model.add_reactions([red_NADPH,red_Glt_Oxa])
+
+    red_model = ["R00248","R00256","R00150","R00253","R09107","ADP-M","Cp-HCO3"]
+
+    for i in red_model:
+        model.reactions.get_by_id(i).knock_out()
+    
+    solution = model.optimize()
+    print(solution)
+    print("\n")
+    print(solution.fluxes)
+    print("\n")
+    
+
 
 with model:
     print("---Acet-Gln Closed---")
